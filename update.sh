@@ -4,8 +4,7 @@ set -e
 date
 echo "Updating applications on VM..."
 
-APP_DIR="/home/azureuser/WeCloudData-ChatBot"
-GIT_REPO="github.com/mfldosari/WeCloudData-ChatBot.git"
+APP_DIR="~/stage6.5"
 BRANCH="main"
 
 # Update code
