@@ -4,7 +4,7 @@ set -e
 date
 echo "Updating applications on VM..."
 
-APP_DIR="~/stage6.5"
+APP_DIR="/home/azureuser/stage6.5"
 BRANCH="main"
 rm -r -f stage6.5/
 # Update code
