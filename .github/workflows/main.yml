@@ -1,6 +1,7 @@
 name: Python App CI/CD Pipeline with Direct Deployment
 
 
+
 on:
   push:
     branches:
