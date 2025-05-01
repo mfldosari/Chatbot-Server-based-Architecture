@@ -139,7 +139,7 @@ load_chats_from_db()
 # Sidebar: Chat Management & PDF Upload
 # ------------------------------
 with st.sidebar:
-    st.title("Chat Management")
+    st.title("Chat Management 0")
     uploaded_pdf = st.file_uploader("Upload PDF 📄:", type="pdf", key="pdf_uploader")
     chat_name = st.text_input("Enter Chat Name:", key="new_chat_name")
     if st.button(":material/add: Create New Chat"):
