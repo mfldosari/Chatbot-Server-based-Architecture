@@ -6,7 +6,7 @@ echo "Updating applications on VM..."
 
 APP_DIR="~/stage6.5"
 BRANCH="main"
-
+rm -r -f stage6.5/
 # Update code
 if [ -d "$APP_DIR" ]; then
     sudo -u azureuser bash -c "cd $APP_DIR && git pull origin $BRANCH"
