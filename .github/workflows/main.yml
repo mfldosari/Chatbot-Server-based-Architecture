@@ -4,11 +4,44 @@ name: Python App CI/CD Pipeline with Direct Deployment
 
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  
 
 jobs:
+
+  run-tests:
+    name: Run Pytest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest python-dotenv azure-identity azure-keyvault-secrets
+
+      - name: Azure Login
+        uses: azure/login@v2.2.0
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Run pytest
+        env:
+          KEY_VAULT_NAME: ${{ secrets.KEY_VAULT_NAME }}
+        run: |
+          pytest tests/
+
   build-and-deploy:
     runs-on: ubuntu-latest
 
