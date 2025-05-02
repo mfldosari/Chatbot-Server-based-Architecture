@@ -40,6 +40,7 @@ jobs:
         env:
           KEY_VAULT_NAME: ${{ secrets.KEY_VAULT_NAME }}
           G_TOKEN: ${{ secrets.G_TOKEN }} 
+          REPO: ${{ secrets.REPO }} 
         run: |
           pytest tests/
 
