@@ -4,8 +4,8 @@ runcmd:
 
 
   # Setup GitHub token in bashrc for both users
-  - echo "export GITHUB_TOKEN=<TOEKN>" >> /home/azureuser/.bashrc
-  - echo "export GITHUB_TOKEN=<TOEKN>" | sudo tee -a /root/.bashrc
+  - echo "export GITHUB_TOKEN=$G_TOKEN" >> /home/azureuser/.bashrc
+  - echo "export GITHUB_TOKEN=$G_TOKEN" | sudo tee -a /root/.bashrc
 
   - chown azureuser:azureuser /home/azureuser/.bashrc
 
