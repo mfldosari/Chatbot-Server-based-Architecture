@@ -12,10 +12,10 @@ runcmd:
   # Run all following commands as azureuser
   - sudo -u azureuser bash -c '
       cd /home/azureuser &&
-      git clone -b main "https://${GITHUB_TOKEN}@<repo without https>" &&
-      cd <repo> &&
+      git clone -b main "https://${GITHUB_TOKEN}@${REPO}" &&
+      cd stage6.5 &&
 
-      echo "KEY_VAULT_NAME=<key vault name>" > .env &&
+      echo "KEY_VAULT_NAME=chatbot11-keyvault" > .env &&
 
       python3 -m venv myenv &&
       source myenv/bin/activate &&
@@ -34,8 +34,8 @@ runcmd:
     [Service]
     Type=simple
     User=azureuser
-    WorkingDirectory=/home/azureuser/<repo>
-    ExecStart=/home/azureuser/<repo>/myenv/bin/uvicorn backend:app --reload --port 5000 --host 0.0.0.0
+    WorkingDirectory=/home/azureuser/stage6.5
+    ExecStart=/home/azureuser/stage6.5/myenv/bin/uvicorn backend:app --reload --port 5000 --host 0.0.0.0
     Restart=always
 
     [Install]
@@ -53,8 +53,8 @@ runcmd:
     [Service]
     Type=simple
     User=azureuser
-    WorkingDirectory=/home/azureuser/<repo>
-    ExecStart=/home/azureuser/<repo>/myenv/bin/streamlit run chatbot.py
+    WorkingDirectory=/home/azureuser/stage6.5
+    ExecStart=/home/azureuser/stage6.5/myenv/bin/streamlit run chatbot.py
     Restart=always
 
     [Install]
