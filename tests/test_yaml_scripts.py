@@ -37,6 +37,8 @@ def test_yaml_structure_2():
     # Test for GitHub token export
     assert "export GITHUB_TOKEN=$G_TOKEN" in '\n'.join(data['runcmd']), "GitHub token export missing"
 
+    assert 'git clone -b main "https://${GITHUB_TOKEN}@${REPO}" &&' in '\n'.join(data['runcmd']), "Git clone command missing"
+
     # Test for systemd service creation
     assert "backend.service" in '\n'.join(data['runcmd']), "Backend service creation is missing"
     assert "frontend.service" in '\n'.join(data['runcmd']), "Frontend service creation is missing"
