@@ -1,0 +1,38 @@
+#cloud-config
+runcmd:
+  - apt update && apt install -y python3-pip python3-venv git docker.io
+
+  # Allow azureuser to use Docker without sudo
+  - usermod -aG docker azureuser
+
+  - chown azureuser:azureuser /home/azureuser/.bashrc
+
+  # Run all following commands as azureuser
+  - sudo -u azureuser bash -c '
+      cd /home/azureuser &&
+      pip install --upgrade pip &&
+      
+    '
+
+  # Create ChromaDB systemd service using Docker
+  - |
+    cat <<EOF | sudo tee /etc/systemd/system/chromadb.service
+    [Unit]
+    Description=chroma via Docker
+    After=docker.service
+    Requires=docker.service
+
+    [Service]
+    Restart=always
+    ExecStartPre=-/usr/bin/docker rm -f chromadb
+    ExecStart=/usr/bin/docker run --name chromadb -p 8000:8000 -e CHROMA_SERVER_HOST=0.0.0.0 ghcr.io/chroma-core/chroma:0.4.24
+    ExecStop=/usr/bin/docker stop chromadb
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+
+  # Reload and start services
+  - sudo systemctl daemon-reload
+  - sudo systemctl enable chromadb && sudo systemctl start chromadb
+

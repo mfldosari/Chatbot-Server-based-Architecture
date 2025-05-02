@@ -1,0 +1,67 @@
+#cloud-config
+runcmd:
+  - apt update && apt install -y python3-pip python3-venv git
+
+
+  # Setup GitHub token in bashrc for both users
+  - echo "export GITHUB_TOKEN=<TOEKN>" >> /home/azureuser/.bashrc
+  - echo "export GITHUB_TOKEN=<TOEKN>" | sudo tee -a /root/.bashrc
+
+  - chown azureuser:azureuser /home/azureuser/.bashrc
+
+  # Run all following commands as azureuser
+  - sudo -u azureuser bash -c '
+      cd /home/azureuser &&
+      git clone -b main "https://${GITHUB_TOKEN}@<repo without https>" &&
+      cd <repo> &&
+
+      echo "KEY_VAULT_NAME=<key vault name>" > .env &&
+
+      python3 -m venv myenv &&
+      source myenv/bin/activate &&
+      pip install --upgrade pip &&
+      pip install -r requirements.txt
+    '
+
+  # Create fastapi systemd service
+  - |
+    cat <<EOF | sudo tee /etc/systemd/system/backend.service
+    [Unit]
+    Description=backedn service
+    After=network.target
+
+
+    [Service]
+    Type=simple
+    User=azureuser
+    WorkingDirectory=/home/azureuser/<repo>
+    ExecStart=/home/azureuser/<repo>/myenv/bin/uvicorn backend:app --reload --port 5000 --host 0.0.0.0
+    Restart=always
+
+    [Install]
+    WantedBy=multi-user.target
+
+    EOF
+
+  # Create Streamlit systemd service
+  - |
+    cat <<EOF | sudo tee /etc/systemd/system/frontend.service
+    [Unit]
+    Description=Streamlit
+    After=network.target
+
+    [Service]
+    Type=simple
+    User=azureuser
+    WorkingDirectory=/home/azureuser/<repo>
+    ExecStart=/home/azureuser/<repo>/myenv/bin/streamlit run chatbot.py
+    Restart=always
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+
+  # Reload and start services
+  - sudo systemctl daemon-reload
+  - sudo systemctl enable backend && sudo systemctl start backend
+  - sudo systemctl enable frontend && sudo systemctl start frontend
