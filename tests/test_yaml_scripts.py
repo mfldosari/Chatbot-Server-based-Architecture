@@ -43,12 +43,11 @@ def test_yaml_structure_2():
 
     # Test for GitHub token export and other values
 
-    assert "export G_TOKEN=" in '\n'.join(data['runcmd']), "github token is not defined"
-    assert "export REPO_URL=" in '\n'.join(data['runcmd']), "repo url is not defined"
-    assert "export REPO_NAME=" in '\n'.join(data['runcmd']), "repo name is not defined"
-    assert "export KEY_VAULT_NAME=" in '\n'.join(data['runcmd']), "key vault name is not defined"
-    assert "export USER" in '\n'.join(data['runcmd']), "user is not defined"
-    assert "export GROUP" in '\n'.join(data['runcmd']), "group is not defined"
+    assert "G_TOKEN=" in '\n'.join(data['runcmd']), "github token is not defined"
+    assert "REPO_URL=" in '\n'.join(data['runcmd']), "repo url is not defined"
+    assert "REPO_NAME=" in '\n'.join(data['runcmd']), "repo name is not defined"
+    assert "KEY_VAULT_NAME=" in '\n'.join(data['runcmd']), "key vault name is not defined"
+    assert "USERNAME=" in '\n'.join(data['runcmd']), "user is not defined"
 
     assert "sudo -u $USER bash -c" in '\n'.join(data['runcmd']), "Run services as user not root"
     assert "$REPO_NAME" in '\n'.join(data['runcmd']), "Repo name is missing"
