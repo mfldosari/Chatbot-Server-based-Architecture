@@ -2,46 +2,44 @@
 runcmd:
   - apt update && apt install -y python3-pip python3-venv git
 
+  - G_TOKEN="<UR TOKEN>"
+  - REPO_URL="<UR REPO URL WITHOUT HTTPS://>"
+  - REPO_NAME="<UR REPO NAME>"
+  - KEY_VAULT_NAME="<UR KEY VAULT NAME>"
+  - USERNAME="<UR USERNAME>"
 
-  # Setup GitHub token in bashrc for both users
-  - echo "export GITHUB_TOKEN=$G_TOKEN" >> /home/azureuser/.bashrc
+  - echo "export GITHUB_TOKEN=$G_TOKEN" >> /home/$USERNAME/.bashrc
   - echo "export GITHUB_TOKEN=$G_TOKEN" | sudo tee -a /root/.bashrc
+  - chown $USERNAME:$USERNAME /home/$USERNAME/.bashrc
 
-  - chown azureuser:azureuser /home/azureuser/.bashrc
-
-  # Run all following commands as azureuser
-  - sudo -u azureuser bash -c '
-      cd /home/azureuser &&
-      git clone -b main "https://${GITHUB_TOKEN}@${REPO}" &&
+  - sudo -u $USERNAME bash -c "
+      cd /home/$USERNAME &&
+      git clone -b main https://$G_TOKEN@$REPO_URL &&
       cd $REPO_NAME &&
       python3 -m venv myenv &&
+      echo 'KEY_VAULT_NAME=$KEY_VAULT_NAME' > .env &&
       source myenv/bin/activate &&
       pip install --upgrade pip &&
       pip install -r requirements.txt
-    '
-  - echo 'KEY_VAULT_NAME=$KEY_VAULT_NAME' > /home/azureuser/$REPO_NAME/.env
-  - chown azureuser:azureuser /home/azureuser/$REPO_NAME/.env
-  # Create fastapi systemd service
+    "
+
   - |
     cat <<EOF | sudo tee /etc/systemd/system/backend.service
     [Unit]
-    Description=backedn service
+    Description=Backend service
     After=network.target
-
 
     [Service]
     Type=simple
-    User=azureuser
-    WorkingDirectory=/home/azureuser/$REPO_NAME
-    ExecStart=/home/azureuser/$REPO_NAME/myenv/bin/uvicorn backend:app --reload --port 5000 --host 0.0.0.0
+    User=$USERNAME
+    WorkingDirectory=/home/$USERNAME/$REPO_NAME
+    ExecStart=/home/$USERNAME/$REPO_NAME/myenv/bin/uvicorn backend:app --reload --port 5000 --host 0.0.0.0
     Restart=always
 
     [Install]
     WantedBy=multi-user.target
-
     EOF
 
-  # Create Streamlit systemd service
   - |
     cat <<EOF | sudo tee /etc/systemd/system/frontend.service
     [Unit]
@@ -50,16 +48,15 @@ runcmd:
 
     [Service]
     Type=simple
-    User=azureuser
-    WorkingDirectory=/home/azureuser/$REPO_NAME
-    ExecStart=/home/azureuser/$REPO_NAME/myenv/bin/streamlit run chatbot.py
+    User=$USERNAME
+    WorkingDirectory=/home/$USERNAME/$REPO_NAME
+    ExecStart=/home/$USERNAME/$REPO_NAME/myenv/bin/streamlit run chatbot.py
     Restart=always
 
     [Install]
     WantedBy=multi-user.target
     EOF
 
-  # Reload and start services
   - sudo systemctl daemon-reload
   - sudo systemctl enable backend && sudo systemctl start backend
   - sudo systemctl enable frontend && sudo systemctl start frontend

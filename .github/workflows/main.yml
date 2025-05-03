@@ -15,11 +15,6 @@ jobs:
   run-tests:
     name: Testing Phases (1-6)
     runs-on: ubuntu-latest
-    env:
-          KEY_VAULT_NAME: ${{ secrets.KEY_VAULT_NAME }}
-          G_TOKEN: ${{ secrets.G_TOKEN }}
-          REPO: ${{ secrets.REPO }}
-          REPO_NAME: ${{ secrets.REPO_NAME }}
 
     steps:
       - name: Checkout code
@@ -86,4 +81,4 @@ jobs:
           --name CustomScript \
           --force-update \
           --publisher Microsoft.Azure.Extensions \
-          --settings '{"commandToExecute": "/home/azureuser/stage6.5/update.sh"}'
+          --settings '{"commandToExecute": "/home/${{vars.USERNAME}}/${{vars.REPO_NAME}}/update.sh"}'

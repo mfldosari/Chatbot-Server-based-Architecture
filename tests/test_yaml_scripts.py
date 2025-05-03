@@ -21,7 +21,8 @@ def test_yaml_structure_1():
 
     # Check if certain commands exist in the runcmd list
     assert "apt update && apt install -y python3-pip python3-venv git docker.io" in data['runcmd'], "Install packages command missing"
-
+    assert "export USER" in '\n'.join(data['runcmd']), "user is not defined"
+    assert "export GROUP" in '\n'.join(data['runcmd']), "group is not defined"
     # Test for specific services being created
     assert "chromadb.service" in '\n'.join(data['runcmd']), "ChromaDB service creation is missing"
 
@@ -40,15 +41,24 @@ def test_yaml_structure_2():
     # Check for installation of packages
     assert "apt update && apt install -y python3-pip python3-venv git" in data['runcmd'], "Install packages command missing"
 
-    # Test for GitHub token export
-    assert "export GITHUB_TOKEN=$G_TOKEN" in '\n'.join(data['runcmd']), "GitHub token export missing"
+    # Test for GitHub token export and other values
 
-    assert "sudo -u azureuser bash -c" in '\n'.join(data['runcmd']), "Run services as user not root"
+    assert "export G_TOKEN=" in '\n'.join(data['runcmd']), "github token is not defined"
+    assert "export REPO_URL=" in '\n'.join(data['runcmd']), "repo url is not defined"
+    assert "export REPO_NAME=" in '\n'.join(data['runcmd']), "repo name is not defined"
+    assert "export KEY_VAULT_NAME=" in '\n'.join(data['runcmd']), "key vault name is not defined"
+    assert "export USER" in '\n'.join(data['runcmd']), "user is not defined"
+    assert "export GROUP" in '\n'.join(data['runcmd']), "group is not defined"
+
+    assert "sudo -u $USER bash -c" in '\n'.join(data['runcmd']), "Run services as user not root"
     assert "$REPO_NAME" in '\n'.join(data['runcmd']), "Repo name is missing"
-    assert "echo 'KEY_VAULT_NAME=$KEY_VAULT_NAME' > /home/azureuser/$REPO_NAME/.env" in '\n'.join(data['runcmd']), "Key Vault command is missing"
+    assert  'echo "KEY_VAULT_NAME=$KEY_VAULT_NAME" > .env' in '\n'.join(data['runcmd']), "Key Vault command is missing"
     assert "python3 -m venv myenv" in '\n'.join(data['runcmd']), "ENV is missing"
-    assert 'git clone -b main "https://${GITHUB_TOKEN}@${REPO}" &&' in '\n'.join(data['runcmd']), "Git clone command missing"
+    assert 'git clone -b main "https://${GITHUB_TOKEN}@${REPO_URL}" &&' in '\n'.join(data['runcmd']), "Git clone command missing"
 
     # Test for systemd service creation
+    assert 'WorkingDirectory=/home/$USER/$REPO_NAME' in '\n'.join(data['runcmd']), "Working Directory is missing in one of the services"
+    assert 'ExecStart=/home/$USER/$REPO_NAME/myenv/bin/uvicorn backend:app --reload --port 5000 --host 0.0.0.0' in '\n'.join(data['runcmd']), "fastapi run command is missing in the service"
+    assert 'ExecStart=/home/$USER/$REPO_NAME/myenv/bin/streamlit run chatbot.py' in '\n'.join(data['runcmd']), "streamlit run command is missing in the service"
     assert "backend.service" in '\n'.join(data['runcmd']), "Backend service creation is missing"
     assert "frontend.service" in '\n'.join(data['runcmd']), "Frontend service creation is missing"

@@ -11,7 +11,6 @@ name                = var.chroma_custom_name
 resource_group_name = var.chroma_custom_rg_name 
 } */
 
-
 # Define an Azure Linux Virtual Machine with the provided configuration
 resource "azurerm_linux_virtual_machine" "chroma_vm" {
   name                = var.chroma_vm_name

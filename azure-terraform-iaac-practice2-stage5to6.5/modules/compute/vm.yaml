@@ -1,18 +1,19 @@
 #cloud-config
 runcmd:
   - apt update && apt install -y python3-pip python3-venv git docker.io
-
+  - export USER=azureuser
+  - export GROUP=azureuser
   # Allow azureuser to use Docker without sudo
-  - usermod -aG docker azureuser
+  - usermod -aG docker $USER
 
-  - chown azureuser:azureuser /home/azureuser/.bashrc
+  - chown  $USER:$GROUP /home/$USER/.bashrc
 
   # Run all following commands as azureuser
-  - sudo -u azureuser bash -c '
-      cd /home/azureuser &&
+  - sudo -u $USER bash -c '
+      cd /home/$USER &&
       pip install --upgrade pip &&
       
-    '
+    'sh
 
   # Create ChromaDB systemd service using Docker
   - |
