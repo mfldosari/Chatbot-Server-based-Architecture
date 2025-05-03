@@ -45,7 +45,7 @@ def test_yaml_structure_2():
 
     assert "sudo -u azureuser bash -c" in '\n'.join(data['runcmd']), "Run services as user not root"
     assert "$REPO_NAME" in '\n'.join(data['runcmd']), "Repo name is missing"
-    assert "echo 'KEY_VAULT_NAME=${KEY_VAULT_NAME}' > .env &&" in '\n'.join(data['runcmd']), "Key Vault name is missing"
+    assert "echo 'KEY_VAULT_NAME=$KEY_VAULT_NAME' > /home/azureuser/$REPO_NAME/.env" in '\n'.join(data['runcmd']), "Key Vault command is missing"
     assert "python3 -m venv myenv" in '\n'.join(data['runcmd']), "ENV is missing"
     assert 'git clone -b main "https://${GITHUB_TOKEN}@${REPO}" &&' in '\n'.join(data['runcmd']), "Git clone command missing"
 

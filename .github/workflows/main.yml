@@ -47,7 +47,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Phase 3 - Check yaml files structure, git cloning and ENVs
+      - name: Phase 3 - Check yaml files structure , git cloning and ENVs
         run: |
           pytest tests/test_yaml_scripts.py
 

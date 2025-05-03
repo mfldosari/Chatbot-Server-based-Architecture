@@ -14,15 +14,13 @@ runcmd:
       cd /home/azureuser &&
       git clone -b main "https://${GITHUB_TOKEN}@${REPO}" &&
       cd $REPO_NAME &&
-      
       python3 -m venv myenv &&
       source myenv/bin/activate &&
       pip install --upgrade pip &&
       pip install -r requirements.txt
     '
   - echo 'KEY_VAULT_NAME=$KEY_VAULT_NAME' > /home/azureuser/$REPO_NAME/.env
-
-
+  - chown azureuser:azureuser /home/azureuser/$REPO_NAME/.env
   # Create fastapi systemd service
   - |
     cat <<EOF | sudo tee /etc/systemd/system/backend.service
