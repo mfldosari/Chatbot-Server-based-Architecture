@@ -17,7 +17,7 @@ runcmd:
       git clone -b main https://$G_TOKEN@$REPO_URL &&
       cd $REPO_NAME &&
       python3 -m venv myenv &&
-      echo 'KEY_VAULT_NAME=$KEY_VAULT_NAME' > .env &&
+      echo "KEY_VAULT_NAME=$KEY_VAULT_NAME" > .env &&
       source myenv/bin/activate &&
       pip install --upgrade pip &&
       pip install -r requirements.txt

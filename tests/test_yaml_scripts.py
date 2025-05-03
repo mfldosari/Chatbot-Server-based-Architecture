@@ -49,15 +49,15 @@ def test_yaml_structure_2():
     assert "KEY_VAULT_NAME=" in '\n'.join(data['runcmd']), "key vault name is not defined"
     assert "USERNAME=" in '\n'.join(data['runcmd']), "user is not defined"
 
-    assert "sudo -u $USER bash -c" in '\n'.join(data['runcmd']), "Run services as user not root"
+    assert "sudo -u $USERNAME bash -c" in '\n'.join(data['runcmd']), "Run services as user not root"
     assert "$REPO_NAME" in '\n'.join(data['runcmd']), "Repo name is missing"
-    assert  'echo "KEY_VAULT_NAME=$KEY_VAULT_NAME" > .env' in '\n'.join(data['runcmd']), "Key Vault command is missing"
+    assert  'echo "KEY_VAULT_NAME=$KEY_VAULT_NAME" > .env &&' in '\n'.join(data['runcmd']), "Key Vault command is missing"
     assert "python3 -m venv myenv" in '\n'.join(data['runcmd']), "ENV is missing"
-    assert 'git clone -b main "https://${GITHUB_TOKEN}@${REPO_URL}" &&' in '\n'.join(data['runcmd']), "Git clone command missing"
+    assert 'git clone -b main https://$G_TOKEN@$REPO_URL &&' in '\n'.join(data['runcmd']), "Git clone command missing"
 
     # Test for systemd service creation
-    assert 'WorkingDirectory=/home/$USER/$REPO_NAME' in '\n'.join(data['runcmd']), "Working Directory is missing in one of the services"
-    assert 'ExecStart=/home/$USER/$REPO_NAME/myenv/bin/uvicorn backend:app --reload --port 5000 --host 0.0.0.0' in '\n'.join(data['runcmd']), "fastapi run command is missing in the service"
-    assert 'ExecStart=/home/$USER/$REPO_NAME/myenv/bin/streamlit run chatbot.py' in '\n'.join(data['runcmd']), "streamlit run command is missing in the service"
+    assert 'WorkingDirectory=/home/$USERNAME/$REPO_NAME' in '\n'.join(data['runcmd']), "Working Directory is missing in one of the services"
+    assert 'ExecStart=/home/$USERNAME/$REPO_NAME/myenv/bin/uvicorn backend:app --reload --port 5000 --host 0.0.0.0' in '\n'.join(data['runcmd']), "fastapi run command is missing in the service"
+    assert 'ExecStart=/home/$USERNAME/$REPO_NAME/myenv/bin/streamlit run chatbot.py' in '\n'.join(data['runcmd']), "streamlit run command is missing in the service"
     assert "backend.service" in '\n'.join(data['runcmd']), "Backend service creation is missing"
     assert "frontend.service" in '\n'.join(data['runcmd']), "Frontend service creation is missing"
