@@ -13,8 +13,12 @@ on:
 jobs:
 
   run-tests:
-    name: Run Pytest
+    name: Testing Phases (1-3)
     runs-on: ubuntu-latest
+    env:
+          KEY_VAULT_NAME: ${{ secrets.KEY_VAULT_NAME }}
+          G_TOKEN: ${{ secrets.G_TOKEN }}
+          REPO: ${{ secrets.REPO }}
 
     steps:
       - name: Checkout code
@@ -43,16 +47,22 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Run pytest
-        env:
-          KEY_VAULT_NAME: ${{ secrets.KEY_VAULT_NAME }}
-          G_TOKEN: ${{ secrets.G_TOKEN }}
-          REPO: ${{ secrets.REPO }}
+      - name: Check yaml files, git cloning and Ports
         run: |
-          pytest tests/
+          pytest tests/test_yaml_scripts.py
+
+      - name: Check Key Vault Access
+        run: |
+            pytest tests/test_keyvault_values.py
+
+
+      - name: Check Database Access
+        run: |
+            pytest tests/test_database_connection.py
 
 
   build-and-deploy:
+    name: Deploy to the Cloud
     runs-on: ubuntu-latest
     needs: run-tests
 

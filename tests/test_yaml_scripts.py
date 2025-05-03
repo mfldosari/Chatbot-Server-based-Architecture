@@ -1,6 +1,7 @@
 import pytest
 import yaml
 import os
+import socket
 
 # Paths to the YAML files
 yaml_file_1_path = './azure-terraform-iaac-practice2-stage5to6.5/modules/compute/vm.yaml'  # Update the filename accordingly
@@ -42,3 +43,15 @@ def test_yaml_structure_2():
     # Test for systemd service creation
     assert "backend.service" in '\n'.join(data['runcmd']), "Backend service creation is missing"
     assert "frontend.service" in '\n'.join(data['runcmd']), "Frontend service creation is missing"
+
+
+
+def is_port_open(host, port, timeout=3):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(timeout)
+        return s.connect_ex((host, port)) == 0
+
+""" @pytest.mark.parametrize("port", [5000, 8000, 8501])
+def test_internal_ports(port):
+    assert is_port_open("127.0.0.1", port), f"Port {port} is not open on localhost"
+ """
