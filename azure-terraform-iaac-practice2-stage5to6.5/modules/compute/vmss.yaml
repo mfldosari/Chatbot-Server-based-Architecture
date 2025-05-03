@@ -15,7 +15,7 @@ runcmd:
       git clone -b main "https://${GITHUB_TOKEN}@${REPO}" &&
       cd $REPO_NAME &&
 
-      echo "KEY_VAULT_NAME=${KEY_VAULT_NAME}" > .env &&
+      echo "KEY_VAULT_NAME=$KEY_VAULT_NAME" > .env &&
 
       python3 -m venv myenv &&
       source myenv/bin/activate &&
