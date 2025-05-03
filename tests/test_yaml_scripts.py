@@ -51,7 +51,6 @@ def is_port_open(host, port, timeout=3):
         s.settimeout(timeout)
         return s.connect_ex((host, port)) == 0
 
-""" @pytest.mark.parametrize("port", [5000, 8000, 8501])
+@pytest.mark.parametrize("port", [5000, 8000, 8501])
 def test_internal_ports(port):
     assert is_port_open("127.0.0.1", port), f"Port {port} is not open on localhost"
- """
