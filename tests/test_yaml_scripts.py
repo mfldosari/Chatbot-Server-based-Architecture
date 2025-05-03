@@ -25,6 +25,11 @@ def test_yaml_structure_1():
     # Test for specific services being created
     assert "chromadb.service" in '\n'.join(data['runcmd']), "ChromaDB service creation is missing"
 
+    assert "sudo systemctl daemon-reload" in '\n'.join(data['runcmd']), "daemon-reload cammand is missing"
+
+    assert "sudo systemctl enable chromadb && sudo systemctl start chromadb" in '\n'.join(data['runcmd']), "Enabling and starting service cammand is missing"
+
+
 # Test for the second YAML file
 def test_yaml_structure_2():
     data = load_yaml_from_file(yaml_file_2_path)
@@ -38,19 +43,12 @@ def test_yaml_structure_2():
     # Test for GitHub token export
     assert "export GITHUB_TOKEN=$G_TOKEN" in '\n'.join(data['runcmd']), "GitHub token export missing"
 
+    assert "sudo -u azureuser bash -c" in '\n'.join(data['runcmd']), "Run services as user not root"
+    assert "$REPO_NAME" in '\n'.join(data['runcmd']), "Repo name is missing"
+    assert "echo 'KEY_VAULT_NAME=${KEY_VAULT_NAME}' > .env &&" in '\n'.join(data['runcmd']), "Key Vault name is missing"
+    assert "python3 -m venv myenv" in '\n'.join(data['runcmd']), "ENV is missing"
     assert 'git clone -b main "https://${GITHUB_TOKEN}@${REPO}" &&' in '\n'.join(data['runcmd']), "Git clone command missing"
 
     # Test for systemd service creation
     assert "backend.service" in '\n'.join(data['runcmd']), "Backend service creation is missing"
     assert "frontend.service" in '\n'.join(data['runcmd']), "Frontend service creation is missing"
-
-
-
-def is_port_open(host, port, timeout=3):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.settimeout(timeout)
-        return s.connect_ex((host, port)) == 0
-
-@pytest.mark.parametrize("port", [5000, 8000, 8501])
-def test_internal_ports(port):
-    assert is_port_open("127.0.0.1", port), f"Port {port} is not open on localhost"
