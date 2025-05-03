@@ -37,28 +37,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Install dependencies
+      - name: Phase 1 - Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest python-dotenv azure-identity azure-keyvault-secrets
-
-      - name: Azure Login
+          
+      - name: Phase 2 - Azure Login
         uses: azure/login@v2.2.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Check yaml files, git cloning and Ports
+      - name: Phase 3 - Check yaml files, git cloning and Ports
         run: |
           pytest tests/test_yaml_scripts.py
 
-      - name: Check Key Vault Access
+      - name: Phase 4 - Check Key Vault Access
         run: |
             pytest tests/test_keyvault_values.py
 
 
-      - name: Check Database Access
+      - name: Phase 5 - Check Database Access
         run: |
             pytest tests/test_database_connection.py
+      
+      - name: Phase 6 - Check Chroma version
+        run: |
+            pytest tests/test_chroma_version.py
 
 
   build-and-deploy:
