@@ -94,13 +94,6 @@ resource "azurerm_key_vault_secret" "openai_key" {
   depends_on = [azurerm_role_assignment.kv_admin]
 }
 
-resource "azurerm_key_vault_secret" "sas_url" {
-  name         = "PROJ-AZURE-STORAGE-SAS-URL"
-  value        = var.PROJ_AZURE_STORAGE_SAS_URL
-  key_vault_id = azurerm_key_vault.kv.id
-
-  depends_on = [azurerm_role_assignment.kv_admin]
-}
 
 resource "azurerm_key_vault_secret" "container_name" {
   name         = "PROJ-AZURE-STORAGE-CONTAINER"

@@ -31,5 +31,4 @@ resource "null_resource" "generate_sas_url" {
 
 }
 
-  https_only = true
-}
+
