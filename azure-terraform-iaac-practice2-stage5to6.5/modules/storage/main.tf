@@ -23,21 +23,13 @@ resource "azurerm_storage_container" "this" {
 }
 
 
-data "azurerm_storage_account_blob_container_sas" "this" {
-  connection_string = azurerm_storage_account.this.primary_connection_string
-  container_name    = azurerm_storage_container.this.name
-
-start  = "2025-05-01"
-expiry = "2025-05-08"
-
-
-  permissions {
-    read   = true
-    write  = true
-    delete = true
-    list   = true
-    add    = true
-    create = true
+resource "null_resource" "generate_sas_url" {
+  provisioner "local-exec" {
+    command = "bash /home/whitehat/stage6.5/azure-terraform-iaac-practice2-stage5to6.5/modules/storage/sas.sh"
   }
+    depends_on = [azurerm_storage_container.this]
+
+}
+
   https_only = true
 }
