@@ -40,9 +40,9 @@ resource "azurerm_linux_virtual_machine" "chroma_vm" {
     sku       = "22_04-lts" 
     version   = "latest"  
   }
-   identity {
+/*    identity {
     type = "SystemAssigned"
-  }
+  } */
   custom_data = filebase64("${path.module}/vm.yaml")
 }
 

@@ -25,3 +25,8 @@ variable "storage_container_name" {
   description = "The name of the storage account"
   type        = string
 }
+
+variable "keyvaultname" {
+  description = "The name of Key vault"
+  type        = string
+}

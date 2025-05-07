@@ -22,13 +22,31 @@ resource "azurerm_storage_container" "this" {
   depends_on = [azurerm_storage_account.this]
 }
 
+resource "azurerm_storage_blob" "pdf_store" {
+  name                   = "pdf_store/"               # Blob name
+  storage_account_name   = azurerm_storage_account.this.name
+  storage_container_name = azurerm_storage_container.this.name
+  type                   = "Block"
 
-resource "null_resource" "generate_sas_url" {
-  provisioner "local-exec" {
-    command = "bash /home/whitehat/stage6.5/azure-terraform-iaac-practice2-stage5to6.5/modules/storage/sas.sh"
-  }
-    depends_on = [azurerm_storage_container.this]
-
+  depends_on = [azurerm_storage_container.this]
 }
 
+resource "null_resource" "generate_sas_url" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+  provisioner "local-exec" {
+    command = <<EOT
+bash ${path.module}/sas.sh \
+  ${azurerm_storage_account.this.name} \
+  ${azurerm_storage_container.this.name} \
+  ${var.keyvaultname}\
+  PROJ-AZURE-STORAGE-SAS-URL \
+  2025-05-06T20:34:52Z \
+  2025-05-11T04:34:52Z
+EOT
+  }
+
+  depends_on = [azurerm_storage_container.this]
+}
 

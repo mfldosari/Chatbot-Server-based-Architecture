@@ -48,6 +48,7 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_all" {
 ##########################
 resource "null_resource" "postgresql_setup" {
   triggers = {
+    always_run = "${timestamp()}"
     postgres_server_name = azurerm_postgresql_flexible_server.this.name
   }
   provisioner "local-exec" {
@@ -60,7 +61,9 @@ resource "null_resource" "postgresql_setup" {
         last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         pdf_path TEXT,
         pdf_name TEXT,
-        pdf_uuid TEXT
+        pdf_uuid TEXT,
+        image_url text NULL,
+      	image_name text NULL
       );
       "
     EOT

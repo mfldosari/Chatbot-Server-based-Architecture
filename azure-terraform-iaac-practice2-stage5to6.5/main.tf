@@ -29,9 +29,10 @@ module "security" {
   PROJ_DB_PORT                 = module.database.db_port
   PROJ_OPENAI_API_KEY          = var.PROJ_OPENAI_API_KEY
   PROJ_AZURE_STORAGE_CONTAINER = var.storage_container_name
-  PROJ_CHROMADB_HOST           = module.network.chroma_vm_private_ip
+  PROJ_CHROMADB_HOST           = module.network.public_ip_address_chroma
   PROJ_CHROMADB_PORT           = var.PROJ_CHROMADB_PORT
 }
+
 
 
 
@@ -53,15 +54,15 @@ module "database" {
 ##########################
 # Storage Module
 ##########################
-
 module "storage" {
-  depends_on = [ module.network ]
   source                 = "./modules/storage"
   location               = module.resource_group.location
   rg_name                = module.resource_group.rg_name
   storage_account_name   = var.storage_account_name
   storage_container_name = var.storage_container_name
+  keyvaultname = module.security.keyvault_name
 }
+
 
 
 
@@ -70,6 +71,7 @@ module "storage" {
 ##########################
 
 module "network" {
+ # depends_on = [ module.security ]
   source              = "./modules/network"
   location            = module.resource_group.location
   rg_name             = module.resource_group.rg_name
@@ -92,6 +94,7 @@ module "network" {
 ##########################
 
 module "compute" {
+  depends_on = [ module.storage ]
   source                = "./modules/compute"
   location              = module.resource_group.location
   rg_name               = module.resource_group.rg_name
